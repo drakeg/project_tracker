@@ -1,0 +1,46 @@
+{% extends "projects/base.html" %}
+
+{% block content %}
+    <span class="glyphicon glyphicon-question-sign"></span>
+{% if latest_tracker_list %}
+	<div class="table-responsive">
+	<table class="table table-sm table-hover">
+		<caption>List of projects</caption>
+		<thead class="thead-dark">
+		<tr>
+			<th scope="col">Task</th>
+			<th scope="col">Title</th>
+			<th scope="col">DT Contact</th>
+			<th scope="col">Contact</th>
+			<th scope="col">Status</th>
+			<th scope="col">Alignment</th>
+			<th scope="col">Keywords</th>
+			<th scope="col">Maturity Model</th>
+			<th scope="col">Updates</th>
+			<th scope="col">Related</th>
+            <th scope="col">Comments</th>
+		</tr>
+		</thead>
+		<tbody>
+	{% for tracker in latest_tracker_list %}
+		<tr>
+			<td>{{tracker.task}}</td>
+			<td><a href="{% url 'detail' tracker.id %}">{{tracker.title}}</a></td>
+			<td>{{tracker.dtcontact}}
+			<td>{{tracker.contact}}</td>
+			<td>{{tracker.status}}</td>
+			<td>{{tracker.alignment}}</td>
+			<td>{{tracker.keywords}}</td>
+			<td>{{tracker.maturitymodel}}</td>
+			<td>{{ tracker.updates }}</td>
+			<td>{{tracker.related}}</td>
+			<td>{{tracker.comments}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	</div>
+{% else %}
+	<p>No projects are available.</p>
+{% endif %}
+{% endblock %}

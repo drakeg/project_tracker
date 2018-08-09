@@ -1,0 +1,10 @@
+{% extends "projects/base.html" %}
+
+{% block content %}
+
+<ul class="list-group">
+	<li class="list-group-item active">{{ tracker }}</li>
+	<li class="list-group-item">Contact: {{ tracker.contact }}</li>
+</ul>
+
+{% endblock %}
