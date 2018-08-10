@@ -24,7 +24,12 @@ class Contact(models.Model):
 	contact_username = models.CharField(max_length=50, null=True)
 	contact_phone = models.CharField(max_length=50)
 	def __str__(self):
+		# This instead returns lastname (first {}), firstname (second {}).
+		#     * The '{}, {}' creates 2 placeholders to be populated by .format()
+		# return '{}, {}'.format(self.contact_lname, self.contact_fname)
+		# TODO: This may show as a bunch of nulls (because username is not required)
 		return self.contact_username
+
 
 class Alignment(models.Model):
 	alignment_text = models.CharField(max_length=50)
@@ -65,7 +70,9 @@ class Tracker(models.Model):
 	maturitymodel = models.ForeignKey(MaturityModel, on_delete=models.SET_NULL, null=True, blank=True)
 	start_date = models.DateField('date_started', null=True, blank=True)
 	end_date = models.DateField('date_ended', null=True, blank=True)
+	# TODO: I think the update model might need to foreign key into the tracker (to allow multiple updates)
 	updates = models.ForeignKey(Update, on_delete=models.SET_NULL, null=True, blank=True)
+	# TODO: I think the comment model might need to foreign key into the tracker (to allow multiple comments)
 	comments = models.ForeignKey(Comment, on_delete=models.SET_NULL, null=True, blank=True)
 	create_date = models.DateField()
 	def __str__(self):
