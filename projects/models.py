@@ -74,7 +74,7 @@ class Tracker(models.Model):
 	updates = models.ForeignKey(Update, on_delete=models.SET_NULL, null=True, blank=True)
 	# TODO: I think the comment model might need to foreign key into the tracker (to allow multiple comments)
 	comments = models.ForeignKey(Comment, on_delete=models.SET_NULL, null=True, blank=True)
-	create_date = models.DateField()
+	create_date = models.DateField(auto_now_add=True)  # Automatically set this date when added
 	def __str__(self):
 		return self.title
 
