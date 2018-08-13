@@ -25,6 +25,19 @@ class StatusSerializer(serializers.ModelSerializer):
 		model = Status
 		fields = ['status_text']
 
+class KeywordSerializer(serializers.ModelSerializer):
+	"""Serializer for the projects.models.Keyword model"""
+
+	class Meta:
+		model = Keyword
+		fields = ['keyword_text']
+
+class StatusSerializer(serializers.ModelSerializer):
+	"""Serializer for the projects.models.Status model"""
+
+	class Meta:
+		model = Status
+		fields = ['status_text']
 
 class SimpleTrackerSerializer(serializers.ModelSerializer):
 	"""
@@ -67,7 +80,6 @@ class RelatedContactSerializer(serializers.ModelSerializer):
 			'contact_lname',
 			'contact_phone',
 		]
-
 
 class FullTrackerSerializer(serializers.ModelSerializer):
 	"""Serializer for listing all details of a projects.models.Tracker model"""
