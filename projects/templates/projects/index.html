@@ -32,7 +32,9 @@
 			<td>{{tracker.alignment}}</td>
 			<td>{{tracker.keywords}}</td>
 			<td>{{tracker.maturitymodel}}</td>
-			<td>{{ tracker.updates }}</td>
+			<td>{%  for update in tracker.updates_set.all %}
+                {{ updates.update_text }}
+                {%  endfor %}</td>
 			<td>{{tracker.related}}</td>
 			<td>{{tracker.comments}}</td>
 		</tr>

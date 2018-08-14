@@ -46,10 +46,26 @@ class MaturityModel(models.Model):
 	def __str__(self):
 		return self.maturitymodel_text
 
+class Tracker(models.Model):
+	task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True)
+	title = models.CharField(max_length=100)
+	contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
+	dtcontact = models.ForeignKey(DTContact, on_delete=models.SET_NULL, null=True, blank=True)
+	status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True)
+	alignment = models.ForeignKey(Alignment, on_delete=models.SET_NULL, null=True)
+	keywords = models.ManyToManyField(Keyword, blank=True)
+	maturitymodel = models.ForeignKey(MaturityModel, on_delete=models.SET_NULL, null=True, blank=True)
+	start_date = models.DateField('date_started', null=True, blank=True)
+	end_date = models.DateField('date_ended', null=True, blank=True)
+	create_date = models.DateField(auto_now_add=True)  # Automatically set this date when added
+	def __str__(self):
+		return self.title
+
 class Comment(models.Model):
 	comment_date = models.DateField()
 	comment_text = models.CharField(max_length=200)
 	comment_user = models.ForeignKey(Contact, on_delete=models.CASCADE)
+	comment_tracker = models.ForeignKey(Tracker, on_delete=models.SET_NULL, null=True, blank=True)
 	def __str__(self):
 		return self.comment_text
 
@@ -57,24 +73,6 @@ class Update(models.Model):
 	update_date = models.DateField()
 	update_text = models.CharField(max_length=150)
 	update_user = models.ForeignKey(Contact, on_delete=models.CASCADE)
+	update_tracker = models.ForeignKey(Tracker, on_delete=models.SET_NULL, null=True, blank=True)
 	def __str__(self):
 		return self.update_text
-
-class Tracker(models.Model):
-	task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True)
-	title = models.CharField(max_length=100)
-	contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
-	status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True)
-	alignment = models.ForeignKey(Alignment, on_delete=models.SET_NULL, null=True)
-	keywords = models.ManyToManyField(Keyword, blank=True)
-	maturitymodel = models.ForeignKey(MaturityModel, on_delete=models.SET_NULL, null=True, blank=True)
-	start_date = models.DateField('date_started', null=True, blank=True)
-	end_date = models.DateField('date_ended', null=True, blank=True)
-	# TODO: I think the update model might need to foreign key into the tracker (to allow multiple updates)
-	updates = models.ForeignKey(Update, on_delete=models.SET_NULL, null=True, blank=True)
-	# TODO: I think the comment model might need to foreign key into the tracker (to allow multiple comments)
-	comments = models.ForeignKey(Comment, on_delete=models.SET_NULL, null=True, blank=True)
-	create_date = models.DateField(auto_now_add=True)  # Automatically set this date when added
-	def __str__(self):
-		return self.title
-
