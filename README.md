@@ -43,7 +43,9 @@ Current resources include:
 - `/api/projects/keywords/`
 - `/api/projects/status/`
 
-API documentation is exposed at `/api/docs/`.
+The legacy CoreAPI-based DRF documentation route was removed because it is no
+longer supported by current Django REST Framework releases. A modern OpenAPI
+documentation endpoint can be added in a follow-up change.
 
 ## CORS configuration
 
