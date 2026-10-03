@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 
-from .models import Keyword, Status, Task
+from .models import Contact, Keyword, Status, Task, Tracker
 
 
 class ModelStringTests(TestCase):
@@ -16,6 +16,23 @@ class ModelStringTests(TestCase):
     def test_keyword_string(self):
         keyword = Keyword(keyword_text="django")
         self.assertEqual(str(keyword), "django")
+
+    def test_contact_string_uses_username_when_present(self):
+        contact = Contact(
+            contact_fname="Ada",
+            contact_lname="Lovelace",
+            contact_phone="555-0100",
+            contact_username="ada",
+        )
+        self.assertEqual(str(contact), "ada")
+
+    def test_contact_string_falls_back_to_name(self):
+        contact = Contact(
+            contact_fname="Ada",
+            contact_lname="Lovelace",
+            contact_phone="555-0100",
+        )
+        self.assertEqual(str(contact), "Lovelace, Ada")
 
 
 class ApiSmokeTests(APITestCase):
@@ -40,3 +57,71 @@ class ApiSmokeTests(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
+
+    def test_tracker_create_with_nested_contact(self):
+        response = self.client.post(
+            "/api/projects/trackers/",
+            {
+                "title": "Modernize API",
+                "contact": {
+                    "contact_fname": "Ada",
+                    "contact_lname": "Lovelace",
+                    "contact_phone": "555-0100",
+                },
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        tracker = Tracker.objects.get()
+        self.assertEqual(tracker.title, "Modernize API")
+        self.assertEqual(tracker.contact.contact_lname, "Lovelace")
+        self.assertEqual(Contact.objects.count(), 1)
+
+    def test_tracker_patch_updates_nested_contact(self):
+        original_contact = Contact.objects.create(
+            contact_fname="Grace",
+            contact_lname="Hopper",
+            contact_phone="555-0101",
+        )
+        tracker = Tracker.objects.create(
+            title="Initial title",
+            contact=original_contact,
+        )
+
+        response = self.client.patch(
+            f"/api/projects/trackers/{tracker.pk}/",
+            {
+                "title": "Updated title",
+                "contact": {
+                    "contact_fname": "Ada",
+                    "contact_lname": "Lovelace",
+                    "contact_phone": "555-0100",
+                },
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        tracker.refresh_from_db()
+        self.assertEqual(tracker.title, "Updated title")
+        self.assertEqual(tracker.contact.contact_lname, "Lovelace")
+        self.assertEqual(Contact.objects.count(), 2)
+
+    def test_tracker_patch_can_clear_contact(self):
+        contact = Contact.objects.create(
+            contact_fname="Grace",
+            contact_lname="Hopper",
+            contact_phone="555-0101",
+        )
+        tracker = Tracker.objects.create(title="Contact cleanup", contact=contact)
+
+        response = self.client.patch(
+            f"/api/projects/trackers/{tracker.pk}/",
+            {"contact": None},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        tracker.refresh_from_db()
+        self.assertIsNone(tracker.contact)
