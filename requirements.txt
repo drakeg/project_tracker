@@ -3,5 +3,4 @@ django-cors-headers==4.9.0
 Django>=6.1.1
 djangorestframework==3.18.1
 markdown==3.11
-urllib==2.5.0
 requests==2.34.2
