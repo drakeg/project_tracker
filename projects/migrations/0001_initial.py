@@ -13,14 +13,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Alignment",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("alignment_text", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name="Contact",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("contact_fname", models.CharField(max_length=50)),
                 ("contact_lname", models.CharField(max_length=50)),
                 ("contact_email", models.EmailField(max_length=254, null=True)),
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="DTContact",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("dtcontact_fname", models.CharField(max_length=50)),
                 ("dtcontact_lname", models.CharField(max_length=50)),
                 ("dtcontact_phone", models.CharField(max_length=50)),
@@ -40,35 +40,35 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Keyword",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("keyword_text", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name="MaturityModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("maturitymodel_text", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
             name="Status",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("status_text", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name="Task",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("task_text", models.CharField(max_length=25)),
             ],
         ),
         migrations.CreateModel(
             name="Tracker",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("title", models.CharField(max_length=100)),
                 ("start_date", models.DateField(blank=True, null=True, verbose_name="date_started")),
                 ("end_date", models.DateField(blank=True, null=True, verbose_name="date_ended")),
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Update",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("update_date", models.DateField()),
                 ("update_text", models.CharField(max_length=150)),
                 (
@@ -156,7 +156,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Comment",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("comment_date", models.DateField()),
                 ("comment_text", models.CharField(max_length=200)),
                 (
