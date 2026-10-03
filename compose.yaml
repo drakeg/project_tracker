@@ -14,5 +14,5 @@ services:
     volumes:
       - .:/app
     command: >
-      sh -c "python manage.py migrate --run-syncdb &&
+      sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:${APP_PORT:-8000}"
