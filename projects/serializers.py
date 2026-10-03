@@ -1,120 +1,98 @@
-"""
-This module contains serializer (input/output format)
-specifications for all models served by Django REST Framework
-"""
-from .models import (
-	Status,
-	Task,
-	DTContact,
-	Contact,
-	Alignment,
-	Keyword,
-	MaturityModel,
-	Comment,
-	Update,
-	Tracker,
-)
+"""Serializers for the project tracker API."""
 
 from rest_framework import serializers
 
+from .models import Contact, Keyword, Status, Tracker
+
 
 class StatusSerializer(serializers.ModelSerializer):
-	"""Serializer for the projects.models.Status model"""
+    """Serializer for project status values."""
 
-	class Meta:
-		model = Status
-		fields = ['status_text']
+    class Meta:
+        model = Status
+        fields = ["status_text"]
+
 
 class KeywordSerializer(serializers.ModelSerializer):
-	"""Serializer for the projects.models.Keyword model"""
+    """Serializer for project keywords."""
 
-	class Meta:
-		model = Keyword
-		fields = ['keyword_text']
+    class Meta:
+        model = Keyword
+        fields = ["keyword_text"]
 
-class StatusSerializer(serializers.ModelSerializer):
-	"""Serializer for the projects.models.Status model"""
-
-	class Meta:
-		model = Status
-		fields = ['status_text']
 
 class SimpleTrackerSerializer(serializers.ModelSerializer):
-	"""
-	Simple Serializer for the projects.models.Tracker model
-	which does not follow nested relationships
-	"""
-	status = StatusSerializer()
+    """Compact tracker representation used by contact responses."""
 
-	class Meta:
-		model = Tracker
-		fields = [
-			'title',
-			'status',
-			'create_date',
-			'start_date',
-			'end_date',
-		]
+    status = StatusSerializer()
+
+    class Meta:
+        model = Tracker
+        fields = [
+            "title",
+            "status",
+            "create_date",
+            "start_date",
+            "end_date",
+        ]
 
 
 class ContactSerializer(serializers.ModelSerializer):
-	"""Serializer for the projects.models.Contact model"""
-	trackers = SimpleTrackerSerializer(source='tracker_set', many=True, read_only=True)
+    """Serializer for contacts and their trackers."""
 
-	class Meta:
-		model = Contact
-		fields = '__all__'
+    trackers = SimpleTrackerSerializer(
+        source="tracker_set",
+        many=True,
+        read_only=True,
+    )
+
+    class Meta:
+        model = Contact
+        fields = "__all__"
 
 
 class RelatedContactSerializer(serializers.ModelSerializer):
-	"""
-	Serializer for the projects.models.Contact model for use when
-	referencing from another model
-	"""
+    """Nested contact representation used by tracker writes."""
 
-	class Meta:
-		model = Contact
-		read_only_fields = ['pk']  # Include primary key, but do not allow editing
-		fields = [
-			'contact_fname',
-			'contact_lname',
-			'contact_phone',
-		]
+    class Meta:
+        model = Contact
+        fields = [
+            "contact_fname",
+            "contact_lname",
+            "contact_phone",
+        ]
+
 
 class FullTrackerSerializer(serializers.ModelSerializer):
-	"""Serializer for listing all details of a projects.models.Tracker model"""
-	contact = RelatedContactSerializer()
+    """Full tracker representation with writable nested contact data."""
 
-	def create(self, validated_data):
-		"""
-		This method is needed because we want to create data across foreign key
-		relationships, which cannot be done automatically by Django REST Framework
-		"""
-		# This removes the RelatedContactSerializer data from the FullTrackerSerializer
-		print(validated_data)
-		contact_data = validated_data.pop('contact')
+    contact = RelatedContactSerializer(required=False, allow_null=True)
 
-		# This checks if contact_data was included, and if so handles it
-		if contact_data:
-			# This either retrieves the contact defined by contact_data,
-			# or creates a row in the Contact table with contact_data
-			contact, was_new_contact_created = Contact.objects.get_or_create(**contact_data)
-		else:
-			# If contact_data was not included, set contact to None
-			contact = None
+    @staticmethod
+    def _resolve_contact(contact_data):
+        if contact_data is None:
+            return None
 
-		# This creates a row in the Tracker table (which can now be done because
-		# contact data was removed from the validated_data dictionary with validated_data.pop('contact')
-		tracker, was_new_tracker_created = Tracker.objects.update_or_create(contact=contact, **validated_data)
-		tracker
+        contact, _ = Contact.objects.get_or_create(**contact_data)
+        return contact
 
-		return tracker
+    def create(self, validated_data):
+        contact_data = validated_data.pop("contact", None)
+        contact = self._resolve_contact(contact_data)
+        return Tracker.objects.create(contact=contact, **validated_data)
 
-	def update(self, instance, validated_data):
-		"""TODO: This should be very similar to the FullTrackerSerialzier#create method"""
-		pass
+    def update(self, instance, validated_data):
+        if "contact" in validated_data:
+            contact_data = validated_data.pop("contact")
+            instance.contact = self._resolve_contact(contact_data)
 
-	class Meta:
-		model = Tracker
-		depth = 2  # This says include up to 2 levels of foreign keys
-		fields = '__all__'
+        for attribute, value in validated_data.items():
+            setattr(instance, attribute, value)
+
+        instance.save()
+        return instance
+
+    class Meta:
+        model = Tracker
+        depth = 2
+        fields = "__all__"
