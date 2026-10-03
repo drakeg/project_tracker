@@ -77,9 +77,16 @@ Current resources include:
 - `/api/projects/keywords/`
 - `/api/projects/status/`
 
-The legacy CoreAPI-based DRF documentation route was removed because it is no
-longer supported by current Django REST Framework releases. A modern OpenAPI
-documentation endpoint remains on the modernization backlog.
+OpenAPI documentation is available at:
+
+- `/api/schema/` — machine-readable OpenAPI schema
+- `/api/docs/` — interactive Swagger UI
+
+The current implementation uses Django REST Framework's built-in OpenAPI
+generator because it is compatible with the project's Django 6.1 / DRF 3.18
+stack. DRF has deprecated its built-in generator in favor of third-party
+schema packages, so this should be revisited when a replacement officially
+supports the current framework versions.
 
 ## CORS configuration
 
