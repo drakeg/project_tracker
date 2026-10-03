@@ -1,26 +1,71 @@
 # project_tracker
 
-## Setting up Django REST Framework
+A Django and Django REST Framework project tracker.
 
-1. Install djangorestframework using pip
-2. Add 'restframework' to your INSTALLED_APPS list in settings.py
-3. Create serializers.py and add serializers for each model you would like 
-to serve via the API
-4. Create model ViewSets for each model, which automatically configures 
-Create, Read, Update, and Delete (CRUD) endpoints for each model
-   * **[Optional]** add create and update methods wherever you want to add or update
-   data to/from multiple tables (across ForeignKeys) in the same API request
-5. Add the ViewSets to urls.py to configure the endpoints to use
+## Local setup
 
-## Configuring Cross Origin Request Security (CORS)
-*CORS is a web specification that allows fine-grained control over which
-URLs/Hosts/Domains are allowed to serve javascript that fetch data from your 
-application.  We are configuring this app to use the most permissive setting,
-to avoid issues during development, but when the app nears production, it 
-should probably be configured to be much more selective*
+1. Create and activate a Python virtual environment.
+2. Install dependencies:
 
-1. Install django-cors-headers using pip
-2. Add 'corsheaders' to your INSTALLED_APPS list in settings.py
-3. Add the line `CORS_ORIGIN_ALLOW_ALL = True` to settings.py
-   * This configures the application to allow any host to serve javascript
-   which performs CRUD operations in this app
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
+
+3. Set local configuration as needed:
+
+   ```bash
+   export DJANGO_SECRET_KEY="local-development-secret"
+   export DJANGO_DEBUG=true
+   export DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1"
+   ```
+
+4. Run Django checks and tests:
+
+   ```bash
+   python manage.py check
+   python manage.py test
+   ```
+
+5. Start the development server:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+## API
+
+The REST API is available under `/api/projects/`.
+
+Current resources include:
+
+- `/api/projects/trackers/`
+- `/api/projects/contacts/`
+- `/api/projects/keywords/`
+- `/api/projects/status/`
+
+The legacy CoreAPI-based DRF documentation route was removed because it is no
+longer supported by current Django REST Framework releases. A modern OpenAPI
+documentation endpoint can be added in a follow-up change.
+
+## CORS configuration
+
+CORS is restrictive by default.
+
+For local development only, all origins can be enabled with:
+
+```bash
+export DJANGO_CORS_ALLOW_ALL_ORIGINS=true
+```
+
+For an explicit allowlist instead:
+
+```bash
+export DJANGO_CORS_ALLOWED_ORIGINS="https://example.com,https://app.example.com"
+```
+
+Do not enable all origins in production.
+
+## Continuous integration
+
+GitHub Actions installs the application dependencies, runs `python manage.py check`,
+and executes the Django test suite for pull requests and pushes to `master`.
