@@ -2,7 +2,40 @@
 
 A Django and Django REST Framework project tracker.
 
-## Local setup
+## Docker Compose
+
+The recommended local setup uses Docker Compose.
+
+1. Create your local environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Adjust values in `.env` if needed. The application port is controlled by
+   `APP_PORT`, so no Compose file edits are required:
+
+   ```dotenv
+   APP_PORT=8000
+   DJANGO_SECRET_KEY=change-me-for-local-development
+   DJANGO_DEBUG=true
+   DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+   ```
+
+3. Build and start the application:
+
+   ```bash
+   docker compose up --build
+   ```
+
+4. Open the application at `http://localhost:8000/projects/`, replacing
+   `8000` with your configured `APP_PORT`.
+
+The container runs Django migrations with `--run-syncdb` before starting the
+development server. Stop it with `Ctrl-C`, or run `docker compose down` from
+another terminal.
+
+## Local Python setup
 
 1. Create and activate a Python virtual environment.
 2. Install dependencies:
@@ -51,16 +84,16 @@ documentation endpoint can be added in a follow-up change.
 
 CORS is restrictive by default.
 
-For local development only, all origins can be enabled with:
+For local development only, all origins can be enabled in `.env`:
 
-```bash
-export DJANGO_CORS_ALLOW_ALL_ORIGINS=true
+```dotenv
+DJANGO_CORS_ALLOW_ALL_ORIGINS=true
 ```
 
 For an explicit allowlist instead:
 
-```bash
-export DJANGO_CORS_ALLOWED_ORIGINS="https://example.com,https://app.example.com"
+```dotenv
+DJANGO_CORS_ALLOWED_ORIGINS=https://example.com,https://app.example.com
 ```
 
 Do not enable all origins in production.
