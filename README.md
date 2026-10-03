@@ -31,7 +31,7 @@ The recommended local setup uses Docker Compose.
 4. Open the application at `http://localhost:8000/projects/`, replacing
    `8000` with your configured `APP_PORT`.
 
-The container runs Django migrations with `--run-syncdb` before starting the
+The container applies the checked-in Django migrations before starting the
 development server. Stop it with `Ctrl-C`, or run `docker compose down` from
 another terminal.
 
@@ -56,6 +56,7 @@ another terminal.
 
    ```bash
    python manage.py check
+   python manage.py makemigrations --check --dry-run
    python manage.py test
    ```
 
@@ -78,7 +79,7 @@ Current resources include:
 
 The legacy CoreAPI-based DRF documentation route was removed because it is no
 longer supported by current Django REST Framework releases. A modern OpenAPI
-documentation endpoint can be added in a follow-up change.
+documentation endpoint remains on the modernization backlog.
 
 ## CORS configuration
 
@@ -98,7 +99,17 @@ DJANGO_CORS_ALLOWED_ORIGINS=https://example.com,https://app.example.com
 
 Do not enable all origins in production.
 
+## Development process
+
+See:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [Coding standards](docs/CODING_STANDARDS.md)
+- [Sprint process](docs/SPRINTS.md)
+
 ## Continuous integration
 
-GitHub Actions installs the application dependencies, runs `python manage.py check`,
-and executes the Django test suite for pull requests and pushes to `master`.
+GitHub Actions installs dependencies, verifies Django system checks and
+migrations, applies migrations, and runs the test suite on pull requests and
+pushes to `master`. Docker-related changes are also validated by the Docker
+workflow.
