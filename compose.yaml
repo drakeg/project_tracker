@@ -1,0 +1,18 @@
+services:
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      APP_PORT: ${APP_PORT:-8000}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-local-development-secret}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+    ports:
+      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "python manage.py migrate --run-syncdb &&
+             python manage.py runserver 0.0.0.0:${APP_PORT:-8000}"
