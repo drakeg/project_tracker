@@ -58,6 +58,20 @@ class ApiSmokeTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
 
+    def test_openapi_schema_is_available(self):
+        response = self.client.get("/api/schema/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("openapi:", response.content.decode())
+        self.assertIn("/api/projects/trackers/", response.content.decode())
+
+    def test_swagger_ui_is_available(self):
+        response = self.client.get("/api/docs/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "SwaggerUIBundle")
+        self.assertContains(response, "/api/schema/")
+
     def test_tracker_create_with_nested_contact(self):
         response = self.client.post(
             "/api/projects/trackers/",
