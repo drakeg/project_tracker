@@ -20,6 +20,7 @@ The recommended local setup uses Docker Compose.
    DJANGO_SECRET_KEY=change-me-for-local-development
    DJANGO_DEBUG=true
    DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+   API_ALLOW_ANONYMOUS=false
    ```
 
 3. Build and start the application:
@@ -77,10 +78,26 @@ Current resources include:
 - `/api/projects/keywords/`
 - `/api/projects/status/`
 
+API data endpoints require authentication by default. Django REST Framework
+Basic Authentication and Session Authentication are enabled. The browsable API
+login/logout routes are available under `/api-auth/`.
+
+For trusted local development only, anonymous access can be enabled with:
+
+```dotenv
+API_ALLOW_ANONYMOUS=true
+```
+
+Do not enable anonymous API access on an exposed deployment unless that is an
+intentional product requirement.
+
 OpenAPI documentation is available at:
 
 - `/api/schema/` — machine-readable OpenAPI schema
 - `/api/docs/` — interactive Swagger UI
+
+The schema and documentation routes remain public; they describe the API but do
+not bypass authentication on the data endpoints.
 
 The current implementation uses Django REST Framework's built-in OpenAPI
 generator because it is compatible with the project's Django 6.1 / DRF 3.18
