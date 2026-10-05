@@ -1,59 +1,39 @@
-"""
-This module contains views specific to the API.  This is not named
-according to any specific naming-convention, but seemed most logical
-in this situation
-"""
+"""API viewsets for project tracker resources."""
 
 from rest_framework import viewsets
-from .models import Tracker, Contact, Keyword, Status
-from .serializers import FullTrackerSerializer, ContactSerializer, KeywordSerializer, StatusSerializer
+
+from .models import Contact, Keyword, Status, Tracker
+from .serializers import (
+    ContactSerializer,
+    FullTrackerSerializer,
+    KeywordSerializer,
+    StatusSerializer,
+)
 
 
 class TrackerViewSet(viewsets.ModelViewSet):
-	"""
-	This ViewSet adds API view actions for the following:
+    """CRUD API for project trackers."""
 
-	* listing all trackers,
-	* getting a single tracker by ID,
-	* Updating a tracker,
-	* Deleting a tracker,
-	"""
-	serializer_class = FullTrackerSerializer
-	queryset = Tracker.objects.all()
+    serializer_class = FullTrackerSerializer
+    queryset = Tracker.objects.all()
 
 
 class ContactViewSet(viewsets.ModelViewSet):
-	"""
-	This ViewSet adds API view actions for the following:
+    """CRUD API for contacts."""
 
-	* listing all contacts,
-	* getting a single contact by ID,
-	* Updating a contact,
-	* Deleting a contact,
-	"""
-	serializer_class = ContactSerializer
-	queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    queryset = Contact.objects.all()
+
 
 class KeywordViewSet(viewsets.ModelViewSet):
-	"""
-	This ViewSet adds API view actions for the following:
+    """CRUD API for keywords."""
 
-	* listing all keywords
-	* getting a single keyword by ID,
-	* Updating a keyword,
-	* Deleting a keyword,
-	"""
-	serializer_class = KeywordSerializer
-	queryset = Keyword.objects.all()
+    serializer_class = KeywordSerializer
+    queryset = Keyword.objects.all()
+
 
 class StatusViewSet(viewsets.ModelViewSet):
-	"""
-	This ViewSet adds API view actions for the following:
+    """CRUD API for status values."""
 
-	* listing all status,
-	* getting a single status by ID,
-	* Updating a status,
-	* Deleting a status,
-	"""
-	serializer_class = StatusSerializer
-	queryset = Status.objects.all()
+    serializer_class = StatusSerializer
+    queryset = Status.objects.all()
