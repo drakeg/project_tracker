@@ -85,9 +85,7 @@ class ApiSmokeTests(APITestCase):
         )
         self.assertEqual(update_response.status_code, 200)
 
-        delete_response = self.client.delete(
-            f"/api/projects/status/{status.pk}/"
-        )
+        delete_response = self.client.delete(f"/api/projects/status/{status.pk}/")
         self.assertEqual(delete_response.status_code, 204)
         self.assertFalse(Status.objects.filter(pk=status.pk).exists())
 
@@ -115,9 +113,7 @@ class ApiSmokeTests(APITestCase):
         )
         self.assertEqual(update_response.status_code, 200)
 
-        delete_response = self.client.delete(
-            f"/api/projects/keywords/{keyword.pk}/"
-        )
+        delete_response = self.client.delete(f"/api/projects/keywords/{keyword.pk}/")
         self.assertEqual(delete_response.status_code, 204)
         self.assertFalse(Keyword.objects.filter(pk=keyword.pk).exists())
 
