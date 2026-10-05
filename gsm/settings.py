@@ -13,7 +13,11 @@ def env_bool(name, default=False):
 
 
 def env_list(name, default=""):
-    return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
+    return [
+        item.strip()
+        for item in os.environ.get(name, default).split(",")
+        if item.strip()
+    ]
 
 
 # Never use the development fallback in production.
