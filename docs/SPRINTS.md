@@ -26,7 +26,6 @@ A sprint item is complete when:
 
 ## Current modernization backlog
 
-- Add linting/formatting checks once the existing codebase is consistently formatted.
 - Review additional model field constraints and data validation.
 - Review production deployment settings separately from the local development configuration.
 - Define a developer/API-key or subscription model if third-party API consumption becomes a product requirement.
