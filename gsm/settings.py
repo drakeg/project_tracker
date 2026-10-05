@@ -89,6 +89,21 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+API_ALLOW_ANONYMOUS = env_bool("API_ALLOW_ANONYMOUS", False)
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        (
+            "rest_framework.permissions.AllowAny"
+            if API_ALLOW_ANONYMOUS
+            else "rest_framework.permissions.IsAuthenticated"
+        )
+    ],
+}
+
 # CORS is restrictive by default. For local development only, set
 # DJANGO_CORS_ALLOW_ALL_ORIGINS=true, or provide a comma-separated allowlist.
 CORS_ALLOW_ALL_ORIGINS = env_bool("DJANGO_CORS_ALLOW_ALL_ORIGINS", False)

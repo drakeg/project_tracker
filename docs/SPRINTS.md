@@ -26,9 +26,9 @@ A sprint item is complete when:
 
 ## Current modernization backlog
 
-- Review API authentication and authorization requirements before exposing endpoints beyond trusted environments.
 - Expand API tests beyond smoke coverage.
 - Add linting/formatting checks once the existing codebase is consistently formatted.
 - Review model field constraints and data validation.
 - Review production deployment settings separately from the local development configuration.
+- Define a developer/API-key or subscription model if third-party API consumption becomes a product requirement.
 - Replace DRF's deprecated built-in OpenAPI generator when a third-party option officially supports the project's current Django/DRF versions.
