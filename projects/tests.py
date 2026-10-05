@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APITestCase
 
@@ -35,7 +36,31 @@ class ModelStringTests(TestCase):
         self.assertEqual(str(contact), "Lovelace, Ada")
 
 
+class AnonymousApiAccessTests(APITestCase):
+    def test_project_api_requires_authentication(self):
+        response = self.client.get("/api/projects/trackers/")
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_openapi_schema_remains_public(self):
+        response = self.client.get("/api/schema/")
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_swagger_ui_remains_public(self):
+        response = self.client.get("/api/docs/")
+
+        self.assertEqual(response.status_code, 200)
+
+
 class ApiSmokeTests(APITestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="api-test-user",
+            password="test-password-123",
+        )
+        self.client.force_authenticate(user=self.user)
+
     def test_status_list(self):
         Status.objects.create(status_text="Open")
 
