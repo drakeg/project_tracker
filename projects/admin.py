@@ -1,6 +1,16 @@
 from django.contrib import admin
 
-from .models import Comment, DTContact, Alignment, Tracker, Task, Contact, Status, Keyword, Update
+from .models import (
+    Alignment,
+    Comment,
+    Contact,
+    DTContact,
+    Keyword,
+    Status,
+    Task,
+    Tracker,
+    Update,
+)
 
 admin.site.register(Tracker)
 admin.site.register(Task)
