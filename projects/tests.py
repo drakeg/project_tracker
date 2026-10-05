@@ -69,6 +69,28 @@ class ApiSmokeTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [{"status_text": "Open"}])
 
+    def test_status_crud(self):
+        create_response = self.client.post(
+            "/api/projects/status/",
+            {"status_text": "Blocked"},
+            format="json",
+        )
+        self.assertEqual(create_response.status_code, 201)
+
+        status = Status.objects.get(status_text="Blocked")
+        update_response = self.client.patch(
+            f"/api/projects/status/{status.pk}/",
+            {"status_text": "Waiting"},
+            format="json",
+        )
+        self.assertEqual(update_response.status_code, 200)
+
+        delete_response = self.client.delete(
+            f"/api/projects/status/{status.pk}/"
+        )
+        self.assertEqual(delete_response.status_code, 204)
+        self.assertFalse(Status.objects.filter(pk=status.pk).exists())
+
     def test_keyword_list(self):
         Keyword.objects.create(keyword_text="security")
 
@@ -76,6 +98,28 @@ class ApiSmokeTests(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [{"keyword_text": "security"}])
+
+    def test_keyword_crud(self):
+        create_response = self.client.post(
+            "/api/projects/keywords/",
+            {"keyword_text": "api"},
+            format="json",
+        )
+        self.assertEqual(create_response.status_code, 201)
+
+        keyword = Keyword.objects.get(keyword_text="api")
+        update_response = self.client.patch(
+            f"/api/projects/keywords/{keyword.pk}/",
+            {"keyword_text": "rest"},
+            format="json",
+        )
+        self.assertEqual(update_response.status_code, 200)
+
+        delete_response = self.client.delete(
+            f"/api/projects/keywords/{keyword.pk}/"
+        )
+        self.assertEqual(delete_response.status_code, 204)
+        self.assertFalse(Keyword.objects.filter(pk=keyword.pk).exists())
 
     def test_empty_tracker_list(self):
         response = self.client.get("/api/projects/trackers/")
@@ -117,6 +161,24 @@ class ApiSmokeTests(APITestCase):
         self.assertEqual(tracker.contact.contact_lname, "Lovelace")
         self.assertEqual(Contact.objects.count(), 1)
 
+    def test_tracker_create_rejects_end_before_start(self):
+        response = self.client.post(
+            "/api/projects/trackers/",
+            {
+                "title": "Invalid dates",
+                "start_date": "2026-10-10",
+                "end_date": "2026-10-09",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["end_date"],
+            ["End date cannot be before start date."],
+        )
+        self.assertFalse(Tracker.objects.exists())
+
     def test_tracker_patch_updates_nested_contact(self):
         original_contact = Contact.objects.create(
             contact_fname="Grace",
@@ -146,6 +208,23 @@ class ApiSmokeTests(APITestCase):
         self.assertEqual(tracker.title, "Updated title")
         self.assertEqual(tracker.contact.contact_lname, "Lovelace")
         self.assertEqual(Contact.objects.count(), 2)
+
+    def test_tracker_patch_rejects_invalid_date_range(self):
+        tracker = Tracker.objects.create(
+            title="Scheduled work",
+            start_date="2026-10-10",
+            end_date="2026-10-20",
+        )
+
+        response = self.client.patch(
+            f"/api/projects/trackers/{tracker.pk}/",
+            {"end_date": "2026-10-09"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        tracker.refresh_from_db()
+        self.assertEqual(str(tracker.end_date), "2026-10-20")
 
     def test_tracker_patch_can_clear_contact(self):
         contact = Contact.objects.create(
