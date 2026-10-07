@@ -3,6 +3,8 @@
 ## Python and Django
 
 - Follow PEP 8 and use four spaces for indentation.
+- Ruff is the automated Python linter and formatter.
+- Run `ruff check .` and `ruff format --check .` before opening a pull request.
 - Prefer clear names over abbreviations.
 - Keep view, serializer, and model responsibilities separated.
 - Avoid debug `print()` calls in committed application code.
@@ -25,6 +27,7 @@
 - Remove obsolete dependencies when their features are removed.
 - Let Renovate/Dependabot handle routine upgrades, but verify CI before merge.
 - Resolve security findings by upgrading or removing the vulnerable dependency path rather than suppressing valid findings.
+- Keep development-only tools in `requirements-dev.txt`.
 
 ## Docker
 
@@ -38,6 +41,8 @@
 At minimum, pull requests should pass:
 
 ```bash
+ruff check .
+ruff format --check .
 python manage.py check
 python manage.py makemigrations --check --dry-run
 python manage.py migrate --noinput

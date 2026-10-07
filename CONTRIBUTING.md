@@ -8,14 +8,30 @@
 4. Update documentation when configuration, APIs, or developer workflows change.
 5. Run the same validation used by CI before opening a pull request.
 
+## Development dependencies
+
+Install development tooling and application dependencies with:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
 ## Required local checks
 
 Run:
 
 ```bash
+ruff check .
+ruff format --check .
 python manage.py check
 python manage.py makemigrations --check --dry-run
 python manage.py test
+```
+
+To apply Ruff formatting locally:
+
+```bash
+ruff format .
 ```
 
 For container-related changes, also run:
