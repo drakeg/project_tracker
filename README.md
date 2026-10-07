@@ -123,6 +123,12 @@ DJANGO_CORS_ALLOWED_ORIGINS=https://example.com,https://app.example.com
 
 Do not enable all origins in production.
 
+## Production deployment
+
+The checked-in Compose configuration is optimized for local development. See
+[Production deployment](docs/DEPLOYMENT.md) for required secret handling,
+HTTPS/cookie settings, HSTS guidance, and trusted reverse-proxy configuration.
+
 ## Development process
 
 See:
@@ -130,6 +136,7 @@ See:
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [Coding standards](docs/CODING_STANDARDS.md)
 - [Sprint process](docs/SPRINTS.md)
+- [Production deployment](docs/DEPLOYMENT.md)
 
 ## Continuous integration
 

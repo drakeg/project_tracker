@@ -2,6 +2,8 @@
 
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -12,6 +14,13 @@ def env_bool(name, default=False):
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def env_int(name, default=0):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return int(value)
+
+
 def env_list(name, default=""):
     return [
         item.strip()
@@ -20,9 +29,16 @@ def env_list(name, default=""):
     ]
 
 
-# Never use the development fallback in production.
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "development-only-insecure-secret-key")
 DEBUG = env_bool("DJANGO_DEBUG", False)
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "development-only-insecure-secret-key"
+    else:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is false."
+        )
 
 ALLOWED_HOSTS = env_list(
     "DJANGO_ALLOWED_HOSTS",
@@ -109,6 +125,23 @@ REST_FRAMEWORK = {
         )
     ],
 }
+
+# Browser and transport security. Local development remains HTTP-friendly by
+# default; production deployments should explicitly enable the secure settings.
+SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
+SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
+CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
+SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
+    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS",
+    False,
+)
+SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+if env_bool("DJANGO_TRUST_X_FORWARDED_PROTO", False):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # CORS is restrictive by default. For local development only, set
 # DJANGO_CORS_ALLOW_ALL_ORIGINS=true, or provide a comma-separated allowlist.
