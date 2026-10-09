@@ -8,6 +8,14 @@ from .models import Contact, Keyword, Status, Tracker
 class StatusSerializer(serializers.ModelSerializer):
     """Serializer for project status values."""
 
+    def validate_status_text(self, value):
+        query = Status.objects.filter(status_text__iexact=value)
+        if self.instance is not None:
+            query = query.exclude(pk=self.instance.pk)
+        if query.exists():
+            raise serializers.ValidationError("Status already exists.")
+        return value
+
     class Meta:
         model = Status
         fields = ["status_text"]
@@ -15,6 +23,14 @@ class StatusSerializer(serializers.ModelSerializer):
 
 class KeywordSerializer(serializers.ModelSerializer):
     """Serializer for project keywords."""
+
+    def validate_keyword_text(self, value):
+        query = Keyword.objects.filter(keyword_text__iexact=value)
+        if self.instance is not None:
+            query = query.exclude(pk=self.instance.pk)
+        if query.exists():
+            raise serializers.ValidationError("Keyword already exists.")
+        return value
 
     class Meta:
         model = Keyword
