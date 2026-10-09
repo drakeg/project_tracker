@@ -69,6 +69,19 @@ class ApiSmokeTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [{"status_text": "Open"}])
 
+    def test_status_create_rejects_case_insensitive_duplicate(self):
+        Status.objects.create(status_text="Open")
+
+        response = self.client.post(
+            "/api/projects/status/",
+            {"status_text": "open"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["status_text"], ["Status already exists."])
+        self.assertEqual(Status.objects.count(), 1)
+
     def test_status_crud(self):
         create_response = self.client.post(
             "/api/projects/status/",
@@ -89,6 +102,20 @@ class ApiSmokeTests(APITestCase):
         self.assertEqual(delete_response.status_code, 204)
         self.assertFalse(Status.objects.filter(pk=status.pk).exists())
 
+    def test_status_update_rejects_case_insensitive_duplicate(self):
+        Status.objects.create(status_text="Open")
+        blocked = Status.objects.create(status_text="Blocked")
+
+        response = self.client.patch(
+            f"/api/projects/status/{blocked.pk}/",
+            {"status_text": "OPEN"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        blocked.refresh_from_db()
+        self.assertEqual(blocked.status_text, "Blocked")
+
     def test_keyword_list(self):
         Keyword.objects.create(keyword_text="security")
 
@@ -96,6 +123,19 @@ class ApiSmokeTests(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [{"keyword_text": "security"}])
+
+    def test_keyword_create_rejects_case_insensitive_duplicate(self):
+        Keyword.objects.create(keyword_text="security")
+
+        response = self.client.post(
+            "/api/projects/keywords/",
+            {"keyword_text": "SECURITY"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["keyword_text"], ["Keyword already exists."])
+        self.assertEqual(Keyword.objects.count(), 1)
 
     def test_keyword_crud(self):
         create_response = self.client.post(
@@ -116,6 +156,20 @@ class ApiSmokeTests(APITestCase):
         delete_response = self.client.delete(f"/api/projects/keywords/{keyword.pk}/")
         self.assertEqual(delete_response.status_code, 204)
         self.assertFalse(Keyword.objects.filter(pk=keyword.pk).exists())
+
+    def test_keyword_update_rejects_case_insensitive_duplicate(self):
+        Keyword.objects.create(keyword_text="security")
+        api_keyword = Keyword.objects.create(keyword_text="api")
+
+        response = self.client.patch(
+            f"/api/projects/keywords/{api_keyword.pk}/",
+            {"keyword_text": "Security"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        api_keyword.refresh_from_db()
+        self.assertEqual(api_keyword.keyword_text, "api")
 
     def test_empty_tracker_list(self):
         response = self.client.get("/api/projects/trackers/")
