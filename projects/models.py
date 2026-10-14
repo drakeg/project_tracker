@@ -1,3 +1,7 @@
+import secrets
+
+from django.conf import settings
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 
 
@@ -117,3 +121,45 @@ class Update(models.Model):
 
     def __str__(self):
         return self.update_text
+
+
+class DeveloperAPIKey(models.Model):
+    """Hashed API credential for developer access."""
+
+    class Plan(models.TextChoices):
+        FREE = "free", "Free"
+        DEVELOPER = "developer", "Developer"
+        INTERNAL = "internal", "Internal"
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="developer_api_keys",
+    )
+    name = models.CharField(max_length=100)
+    prefix = models.CharField(max_length=16, unique=True, editable=False)
+    key_hash = models.CharField(max_length=128, editable=False)
+    plan = models.CharField(max_length=20, choices=Plan.choices, default=Plan.FREE)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    @classmethod
+    def issue(cls, *, owner, name, plan=Plan.FREE):
+        prefix = secrets.token_hex(6)
+        secret = secrets.token_urlsafe(32)
+        raw_key = f"ptk_{prefix}_{secret}"
+        api_key = cls.objects.create(
+            owner=owner,
+            name=name,
+            prefix=prefix,
+            key_hash=make_password(raw_key),
+            plan=plan,
+        )
+        return api_key, raw_key
+
+    def matches(self, raw_key):
+        return check_password(raw_key, self.key_hash)
+
+    def __str__(self):
+        return f"{self.name} ({self.prefix})"
