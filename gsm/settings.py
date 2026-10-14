@@ -114,6 +114,7 @@ STATIC_URL = "/static/"
 API_ALLOW_ANONYMOUS = env_bool("API_ALLOW_ANONYMOUS", False)
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "projects.authentication.DeveloperAPIKeyAuthentication",
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
