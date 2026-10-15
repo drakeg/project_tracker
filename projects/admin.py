@@ -4,6 +4,7 @@ from .models import (
     Alignment,
     Comment,
     Contact,
+    DeveloperAPIKey,
     DTContact,
     Keyword,
     Status,
@@ -21,3 +22,11 @@ admin.site.register(Update)
 admin.site.register(Alignment)
 admin.site.register(Comment)
 admin.site.register(DTContact)
+
+
+@admin.register(DeveloperAPIKey)
+class DeveloperAPIKeyAdmin(admin.ModelAdmin):
+    list_display = ("name", "owner", "plan", "is_active", "prefix", "created_at")
+    list_filter = ("plan", "is_active")
+    search_fields = ("name", "owner__username", "prefix")
+    readonly_fields = ("prefix", "key_hash", "created_at")

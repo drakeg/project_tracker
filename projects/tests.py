@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APITestCase
 
-from .models import Contact, Keyword, Status, Task, Tracker
+from .models import Contact, DeveloperAPIKey, Keyword, Status, Task, Tracker
 
 
 class ModelStringTests(TestCase):
@@ -51,6 +51,54 @@ class AnonymousApiAccessTests(APITestCase):
         response = self.client.get("/api/docs/")
 
         self.assertEqual(response.status_code, 200)
+
+
+class DeveloperAPIKeyTests(APITestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="developer-user",
+            password="test-password-123",
+        )
+
+    def test_issued_key_authenticates_and_plaintext_is_not_stored(self):
+        api_key, raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Integration key",
+            plan=DeveloperAPIKey.Plan.DEVELOPER,
+        )
+
+        self.assertNotEqual(api_key.key_hash, raw_key)
+        self.assertTrue(api_key.matches(raw_key))
+
+        response = self.client.get(
+            "/api/projects/trackers/",
+            HTTP_X_API_KEY=raw_key,
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_api_key_is_rejected(self):
+        response = self.client.get(
+            "/api/projects/trackers/",
+            HTTP_X_API_KEY="ptk_invalid_invalid",
+        )
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_inactive_api_key_is_rejected(self):
+        api_key, raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Disabled key",
+        )
+        api_key.is_active = False
+        api_key.save(update_fields=["is_active"])
+
+        response = self.client.get(
+            "/api/projects/trackers/",
+            HTTP_X_API_KEY=raw_key,
+        )
+
+        self.assertEqual(response.status_code, 401)
 
 
 class ApiSmokeTests(APITestCase):

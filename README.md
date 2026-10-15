@@ -91,6 +91,12 @@ API_ALLOW_ANONYMOUS=true
 Do not enable anonymous API access on an exposed deployment unless that is an
 intentional product requirement.
 
+Third-party integrations can use hashed developer API keys via the
+`X-API-Key` header. Keys are tied to Django users and carry a `free`,
+`developer`, or `internal` plan value so a future billing system can enforce
+paid developer access without changing the authentication format. See
+[Developer API access](docs/DEVELOPER_API_ACCESS.md).
+
 OpenAPI documentation is available at:
 
 - `/api/schema/` — machine-readable OpenAPI schema
@@ -137,6 +143,7 @@ See:
 - [Coding standards](docs/CODING_STANDARDS.md)
 - [Sprint process](docs/SPRINTS.md)
 - [Production deployment](docs/DEPLOYMENT.md)
+- [Developer API access](docs/DEVELOPER_API_ACCESS.md)
 
 ## Continuous integration
 
