@@ -26,5 +26,5 @@ A sprint item is complete when:
 
 ## Current modernization backlog
 
-- Add billing-provider integration and request metering if paid third-party API access becomes a product requirement.
+- Add billing-provider integration and billable usage metering if paid third-party API access becomes a product requirement.
 - Replace DRF's deprecated built-in OpenAPI generator when a third-party option officially supports the project's current Django/DRF versions.
