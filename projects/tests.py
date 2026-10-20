@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.core.cache import cache
+from django.test import TestCase, override_settings
 from rest_framework.test import APITestCase
 
 from .models import Contact, DeveloperAPIKey, Keyword, Status, Task, Tracker
@@ -53,8 +54,29 @@ class AnonymousApiAccessTests(APITestCase):
         self.assertEqual(response.status_code, 200)
 
 
+THROTTLED_REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "projects.authentication.DeveloperAPIKeyAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "projects.throttling.FreeDeveloperAPIKeyThrottle",
+        "projects.throttling.PaidDeveloperAPIKeyThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "developer_api_free": "2/min",
+        "developer_api_developer": "3/min",
+    },
+}
+
+
 class DeveloperAPIKeyTests(APITestCase):
     def setUp(self):
+        cache.clear()
         self.user = get_user_model().objects.create_user(
             username="developer-user",
             password="test-password-123",
@@ -99,6 +121,73 @@ class DeveloperAPIKeyTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, 401)
+
+    @override_settings(REST_FRAMEWORK=THROTTLED_REST_FRAMEWORK)
+    def test_free_plan_uses_lower_request_limit(self):
+        _api_key, raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Free key",
+            plan=DeveloperAPIKey.Plan.FREE,
+        )
+
+        first = self.client.get(
+            "/api/projects/trackers/",
+            HTTP_X_API_KEY=raw_key,
+        )
+        second = self.client.get(
+            "/api/projects/trackers/",
+            HTTP_X_API_KEY=raw_key,
+        )
+        throttled = self.client.get(
+            "/api/projects/trackers/",
+            HTTP_X_API_KEY=raw_key,
+        )
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(throttled.status_code, 429)
+
+    @override_settings(REST_FRAMEWORK=THROTTLED_REST_FRAMEWORK)
+    def test_developer_plan_uses_higher_request_limit(self):
+        _api_key, raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Developer key",
+            plan=DeveloperAPIKey.Plan.DEVELOPER,
+        )
+
+        responses = [
+            self.client.get(
+                "/api/projects/trackers/",
+                HTTP_X_API_KEY=raw_key,
+            )
+            for _ in range(4)
+        ]
+
+        self.assertEqual(
+            [response.status_code for response in responses],
+            [200, 200, 200, 429],
+        )
+
+    @override_settings(REST_FRAMEWORK=THROTTLED_REST_FRAMEWORK)
+    def test_internal_plan_is_not_throttled(self):
+        _api_key, raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Internal key",
+            plan=DeveloperAPIKey.Plan.INTERNAL,
+        )
+
+        responses = [
+            self.client.get(
+                "/api/projects/trackers/",
+                HTTP_X_API_KEY=raw_key,
+            )
+            for _ in range(5)
+        ]
+
+        self.assertEqual(
+            [response.status_code for response in responses],
+            [200, 200, 200, 200, 200],
+        )
 
 
 class ApiSmokeTests(APITestCase):
