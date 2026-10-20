@@ -1,0 +1,37 @@
+"""Request throttles for developer API key plans."""
+
+from rest_framework.throttling import SimpleRateThrottle
+
+from .models import DeveloperAPIKey
+
+
+class DeveloperAPIKeyPlanThrottle(SimpleRateThrottle):
+    """Base throttle that applies only to one developer API key plan."""
+
+    plan = None
+
+    def get_cache_key(self, request, view):
+        api_key = request.auth
+        if not isinstance(api_key, DeveloperAPIKey):
+            return None
+        if api_key.plan != self.plan:
+            return None
+
+        return self.cache_format % {
+            "scope": self.scope,
+            "ident": api_key.prefix,
+        }
+
+
+class FreeDeveloperAPIKeyThrottle(DeveloperAPIKeyPlanThrottle):
+    """Throttle free developer API keys."""
+
+    scope = "developer_api_free"
+    plan = DeveloperAPIKey.Plan.FREE
+
+
+class PaidDeveloperAPIKeyThrottle(DeveloperAPIKeyPlanThrottle):
+    """Throttle developer-plan API keys."""
+
+    scope = "developer_api_developer"
+    plan = DeveloperAPIKey.Plan.DEVELOPER
