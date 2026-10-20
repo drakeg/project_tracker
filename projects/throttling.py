@@ -1,5 +1,6 @@
 """Request throttles for developer API key plans."""
 
+from django.conf import settings
 from rest_framework.throttling import SimpleRateThrottle
 
 from .models import DeveloperAPIKey
@@ -9,6 +10,10 @@ class DeveloperAPIKeyPlanThrottle(SimpleRateThrottle):
     """Base throttle that applies only to one developer API key plan."""
 
     plan = None
+
+    def get_rate(self):
+        """Read the current configured rate for this throttle scope."""
+        return settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"].get(self.scope)
 
     def get_cache_key(self, request, view):
         api_key = request.auth
