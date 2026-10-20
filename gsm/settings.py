@@ -125,6 +125,20 @@ REST_FRAMEWORK = {
             else "rest_framework.permissions.IsAuthenticated"
         )
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "projects.throttling.FreeDeveloperAPIKeyThrottle",
+        "projects.throttling.PaidDeveloperAPIKeyThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "developer_api_free": os.environ.get(
+            "API_FREE_THROTTLE_RATE",
+            "100/hour",
+        ),
+        "developer_api_developer": os.environ.get(
+            "API_DEVELOPER_THROTTLE_RATE",
+            "1000/hour",
+        ),
+    },
 }
 
 # Browser and transport security. Local development remains HTTP-friendly by
