@@ -38,11 +38,24 @@ Each key carries one of these plan values:
 - `developer`
 - `internal`
 
-The current release records the plan but does not yet meter usage or collect
-payment. This keeps authentication independent from the future billing
-provider.
+Plan values now control request throttling for developer API keys:
 
-A future paywall can map successful subscription events to the `developer`
+- `free`: defaults to `100/hour`;
+- `developer`: defaults to `1000/hour`;
+- `internal`: unthrottled.
+
+The free and developer limits are configurable with:
+
+```dotenv
+API_FREE_THROTTLE_RATE=100/hour
+API_DEVELOPER_THROTTLE_RATE=1000/hour
+```
+
+Interactive session/basic-auth users are not affected by these developer-key
+limits.
+
+The application still does not collect payment or meter billable usage. A
+future paywall can map successful subscription events to the `developer`
 plan and deactivate or downgrade keys when a subscription expires, without
 changing how clients authenticate.
 
@@ -60,7 +73,8 @@ incorrect.
 - the stored key value uses Django's password hashing framework;
 - each key belongs to a Django user;
 - users can have multiple independently revocable integration keys;
-- plans are metadata only until billing/metering is implemented.
+- free and developer plans have separate request limits;
+- internal keys are not throttled by the developer-key throttles.
 
-Billing-provider integration and request metering should be implemented as
+Billing-provider integration and billable request metering should remain
 separate concerns rather than embedding payment logic into authentication.
