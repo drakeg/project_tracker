@@ -75,6 +75,12 @@ Current resources include:
 
 - `/api/projects/trackers/`
 - `/api/projects/contacts/`
+- `/api/projects/dtcontacts/`
+- `/api/projects/tasks/`
+- `/api/projects/alignments/`
+- `/api/projects/maturity-models/`
+- `/api/projects/comments/`
+- `/api/projects/updates/`
 - `/api/projects/keywords/`
 - `/api/projects/status/`
 
