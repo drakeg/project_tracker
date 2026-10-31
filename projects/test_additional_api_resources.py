@@ -117,9 +117,7 @@ class AdditionalApiResourceTests(APITestCase):
         self.assertEqual(comment.comment_text, "Updated comment")
         self.assertEqual(comment.comment_user, contact)
 
-        delete_response = self.client.delete(
-            f"/api/projects/comments/{comment.pk}/"
-        )
+        delete_response = self.client.delete(f"/api/projects/comments/{comment.pk}/")
         self.assertEqual(delete_response.status_code, 204)
         self.assertFalse(Comment.objects.filter(pk=comment.pk).exists())
 
@@ -154,8 +152,6 @@ class AdditionalApiResourceTests(APITestCase):
         self.assertEqual(update.update_text, "Completed update")
         self.assertEqual(update.update_user, contact)
 
-        delete_response = self.client.delete(
-            f"/api/projects/updates/{update.pk}/"
-        )
+        delete_response = self.client.delete(f"/api/projects/updates/{update.pk}/")
         self.assertEqual(delete_response.status_code, 204)
         self.assertFalse(Update.objects.filter(pk=update.pk).exists())
