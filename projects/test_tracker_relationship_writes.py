@@ -28,9 +28,7 @@ class TrackerRelationshipWriteTests(APITestCase):
         )
         self.status = Status.objects.create(status_text="Open")
         self.alignment = Alignment.objects.create(alignment_text="Strategic")
-        self.maturity = MaturityModel.objects.create(
-            maturitymodel_text="Managed"
-        )
+        self.maturity = MaturityModel.objects.create(maturitymodel_text="Managed")
         self.security = Keyword.objects.create(keyword_text="security")
         self.api = Keyword.objects.create(keyword_text="api")
 
