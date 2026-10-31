@@ -139,9 +139,51 @@ class RelatedContactSerializer(serializers.ModelSerializer):
 
 
 class FullTrackerSerializer(serializers.ModelSerializer):
-    """Full tracker representation with writable nested contact data."""
+    """Full tracker representation with writable relationship inputs."""
 
     contact = RelatedContactSerializer(required=False, allow_null=True)
+    task_id = serializers.PrimaryKeyRelatedField(
+        source="task",
+        queryset=Task.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+    dtcontact_id = serializers.PrimaryKeyRelatedField(
+        source="dtcontact",
+        queryset=DTContact.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+    status_id = serializers.PrimaryKeyRelatedField(
+        source="status",
+        queryset=Status.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+    alignment_id = serializers.PrimaryKeyRelatedField(
+        source="alignment",
+        queryset=Alignment.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+    maturitymodel_id = serializers.PrimaryKeyRelatedField(
+        source="maturitymodel",
+        queryset=MaturityModel.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+    keyword_ids = serializers.PrimaryKeyRelatedField(
+        source="keywords",
+        queryset=Keyword.objects.all(),
+        many=True,
+        required=False,
+        write_only=True,
+    )
 
     def validate(self, attrs):
         start_date = attrs.get(
@@ -170,18 +212,30 @@ class FullTrackerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         contact_data = validated_data.pop("contact", None)
+        keywords = validated_data.pop("keywords", None)
         contact = self._resolve_contact(contact_data)
-        return Tracker.objects.create(contact=contact, **validated_data)
+        instance = Tracker.objects.create(contact=contact, **validated_data)
+
+        if keywords is not None:
+            instance.keywords.set(keywords)
+
+        return instance
 
     def update(self, instance, validated_data):
         if "contact" in validated_data:
             contact_data = validated_data.pop("contact")
             instance.contact = self._resolve_contact(contact_data)
 
+        keywords = validated_data.pop("keywords", None)
+
         for attribute, value in validated_data.items():
             setattr(instance, attribute, value)
 
         instance.save()
+
+        if keywords is not None:
+            instance.keywords.set(keywords)
+
         return instance
 
     class Meta:

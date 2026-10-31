@@ -100,6 +100,27 @@ Example:
 /api/projects/trackers/?status=2&search=migration&ordering=-start_date
 ```
 
+Tracker writes accept relationship IDs while responses keep nested relationship
+details. Supported write fields include:
+
+- `task_id`
+- `dtcontact_id`
+- `status_id`
+- `alignment_id`
+- `maturitymodel_id`
+- `keyword_ids` (array of keyword IDs)
+
+Example:
+
+```json
+{
+  "title": "Modernize API",
+  "task_id": 3,
+  "status_id": 2,
+  "keyword_ids": [1, 4]
+}
+```
+
 API data endpoints require authentication by default. Django REST Framework
 Basic Authentication and Session Authentication are enabled. The browsable API
 login/logout routes are available under `/api-auth/`.
