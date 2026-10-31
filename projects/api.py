@@ -1,6 +1,6 @@
 """API viewsets for project tracker resources."""
 
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 
 from .models import (
     Alignment,
@@ -33,6 +33,34 @@ class TrackerViewSet(viewsets.ModelViewSet):
 
     serializer_class = FullTrackerSerializer
     queryset = Tracker.objects.all()
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["title"]
+    ordering_fields = ["title", "start_date", "end_date", "create_date"]
+    ordering = ["title"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query_params = self.request.query_params
+
+        relationship_filters = {
+            "status": "status_id",
+            "task": "task_id",
+            "contact": "contact_id",
+        }
+        for parameter, field in relationship_filters.items():
+            value = query_params.get(parameter)
+            if value:
+                queryset = queryset.filter(**{field: value})
+
+        start_date_gte = query_params.get("start_date_gte")
+        if start_date_gte:
+            queryset = queryset.filter(start_date__gte=start_date_gte)
+
+        end_date_lte = query_params.get("end_date_lte")
+        if end_date_lte:
+            queryset = queryset.filter(end_date__lte=end_date_lte)
+
+        return queryset
 
 
 class ContactViewSet(viewsets.ModelViewSet):
