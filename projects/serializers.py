@@ -2,7 +2,66 @@
 
 from rest_framework import serializers
 
-from .models import Contact, Keyword, Status, Tracker
+from .models import (
+    Alignment,
+    Comment,
+    Contact,
+    DTContact,
+    Keyword,
+    MaturityModel,
+    Status,
+    Task,
+    Tracker,
+    Update,
+)
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    """Serializer for task values."""
+
+    class Meta:
+        model = Task
+        fields = "__all__"
+
+
+class DTContactSerializer(serializers.ModelSerializer):
+    """Serializer for delivery-team contacts."""
+
+    class Meta:
+        model = DTContact
+        fields = "__all__"
+
+
+class AlignmentSerializer(serializers.ModelSerializer):
+    """Serializer for alignment values."""
+
+    class Meta:
+        model = Alignment
+        fields = "__all__"
+
+
+class MaturityModelSerializer(serializers.ModelSerializer):
+    """Serializer for maturity-model values."""
+
+    class Meta:
+        model = MaturityModel
+        fields = "__all__"
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Serializer for tracker comments."""
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
+
+
+class UpdateSerializer(serializers.ModelSerializer):
+    """Serializer for tracker updates."""
+
+    class Meta:
+        model = Update
+        fields = "__all__"
 
 
 class StatusSerializer(serializers.ModelSerializer):
