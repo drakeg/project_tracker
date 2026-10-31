@@ -84,6 +84,22 @@ Current resources include:
 - `/api/projects/keywords/`
 - `/api/projects/status/`
 
+Tracker list queries support:
+
+- `status=<id>`
+- `task=<id>`
+- `contact=<id>`
+- `start_date_gte=YYYY-MM-DD`
+- `end_date_lte=YYYY-MM-DD`
+- `search=<title text>`
+- `ordering=title|start_date|end_date|create_date` (prefix with `-` for descending)
+
+Example:
+
+```text
+/api/projects/trackers/?status=2&search=migration&ordering=-start_date
+```
+
 API data endpoints require authentication by default. Django REST Framework
 Basic Authentication and Session Authentication are enabled. The browsable API
 login/logout routes are available under `/api-auth/`.
