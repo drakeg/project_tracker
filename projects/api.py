@@ -46,6 +46,10 @@ class TrackerViewSet(viewsets.ModelViewSet):
             "status": "status_id",
             "task": "task_id",
             "contact": "contact_id",
+            "dtcontact": "dtcontact_id",
+            "alignment": "alignment_id",
+            "maturitymodel": "maturitymodel_id",
+            "keyword": "keywords__id",
         }
         for parameter, field in relationship_filters.items():
             value = query_params.get(parameter)
@@ -60,7 +64,7 @@ class TrackerViewSet(viewsets.ModelViewSet):
         if end_date_lte:
             queryset = queryset.filter(end_date__lte=end_date_lte)
 
-        return queryset
+        return queryset.distinct()
 
 
 class ContactViewSet(viewsets.ModelViewSet):
@@ -103,6 +107,32 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["comment_text"]
+    ordering_fields = ["comment_date"]
+    ordering = ["-comment_date"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query_params = self.request.query_params
+
+        tracker = query_params.get("tracker")
+        if tracker:
+            queryset = queryset.filter(comment_tracker_id=tracker)
+
+        user = query_params.get("user")
+        if user:
+            queryset = queryset.filter(comment_user_id=user)
+
+        date_gte = query_params.get("date_gte")
+        if date_gte:
+            queryset = queryset.filter(comment_date__gte=date_gte)
+
+        date_lte = query_params.get("date_lte")
+        if date_lte:
+            queryset = queryset.filter(comment_date__lte=date_lte)
+
+        return queryset
 
 
 class UpdateViewSet(viewsets.ModelViewSet):
@@ -110,6 +140,32 @@ class UpdateViewSet(viewsets.ModelViewSet):
 
     serializer_class = UpdateSerializer
     queryset = Update.objects.all()
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["update_text"]
+    ordering_fields = ["update_date"]
+    ordering = ["-update_date"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query_params = self.request.query_params
+
+        tracker = query_params.get("tracker")
+        if tracker:
+            queryset = queryset.filter(update_tracker_id=tracker)
+
+        user = query_params.get("user")
+        if user:
+            queryset = queryset.filter(update_user_id=user)
+
+        date_gte = query_params.get("date_gte")
+        if date_gte:
+            queryset = queryset.filter(update_date__gte=date_gte)
+
+        date_lte = query_params.get("date_lte")
+        if date_lte:
+            queryset = queryset.filter(update_date__lte=date_lte)
+
+        return queryset
 
 
 class KeywordViewSet(viewsets.ModelViewSet):
