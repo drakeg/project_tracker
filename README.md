@@ -89,6 +89,10 @@ Tracker list queries support:
 - `status=<id>`
 - `task=<id>`
 - `contact=<id>`
+- `dtcontact=<id>`
+- `alignment=<id>`
+- `maturitymodel=<id>`
+- `keyword=<id>`
 - `start_date_gte=YYYY-MM-DD`
 - `end_date_lte=YYYY-MM-DD`
 - `search=<title text>`
@@ -97,8 +101,18 @@ Tracker list queries support:
 Example:
 
 ```text
-/api/projects/trackers/?status=2&search=migration&ordering=-start_date
+/api/projects/trackers/?status=2&keyword=4&search=migration&ordering=-start_date
 ```
+
+Comment and update list queries support:
+
+- `tracker=<id>`
+- `user=<contact id>`
+- `date_gte=YYYY-MM-DD`
+- `date_lte=YYYY-MM-DD`
+- `search=<text>`
+- `ordering=comment_date` for comments
+- `ordering=update_date` for updates
 
 Tracker writes accept relationship IDs while responses keep nested relationship
 details. Supported write fields include:
