@@ -218,6 +218,28 @@ See:
 - [Production deployment](docs/DEPLOYMENT.md)
 - [Developer API access](docs/DEVELOPER_API_ACCESS.md)
 
+## Health monitoring
+
+A public operational health check is available at:
+
+```text
+/health/
+```
+
+A healthy application returns HTTP `200` with:
+
+```json
+{
+  "status": "ok",
+  "database": "ok"
+}
+```
+
+If the database probe fails, the endpoint returns HTTP `503`. This endpoint is
+intended for container health checks, load balancers, Uptime Kuma, and similar
+monitoring systems; it does not expose application data or bypass API
+authentication.
+
 ## Continuous integration
 
 GitHub Actions installs dependencies, verifies Django system checks and
