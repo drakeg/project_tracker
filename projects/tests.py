@@ -42,11 +42,15 @@ class AnonymousApiAccessTests(APITestCase):
         response = self.client.get("/api/projects/trackers/")
 
         self.assertEqual(response.status_code, 401)
+        api_key.refresh_from_db()
+        self.assertIsNone(api_key.last_used_at)
 
     def test_openapi_schema_remains_public(self):
         response = self.client.get("/api/schema/")
 
         self.assertEqual(response.status_code, 200)
+        api_key.refresh_from_db()
+        self.assertIsNotNone(api_key.last_used_at)
 
     def test_swagger_ui_remains_public(self):
         response = self.client.get("/api/docs/")
@@ -100,12 +104,19 @@ class DeveloperAPIKeyTests(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_api_key_is_rejected(self):
+        api_key, _raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Unused key",
+        )
+
         response = self.client.get(
             "/api/projects/trackers/",
             HTTP_X_API_KEY="ptk_invalid_invalid",
         )
 
         self.assertEqual(response.status_code, 401)
+        api_key.refresh_from_db()
+        self.assertIsNone(api_key.last_used_at)
 
     def test_inactive_api_key_is_rejected(self):
         api_key, raw_key = DeveloperAPIKey.issue(
