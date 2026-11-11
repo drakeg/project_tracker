@@ -26,7 +26,15 @@ admin.site.register(DTContact)
 
 @admin.register(DeveloperAPIKey)
 class DeveloperAPIKeyAdmin(admin.ModelAdmin):
-    list_display = ("name", "owner", "plan", "is_active", "prefix", "created_at")
+    list_display = (
+        "name",
+        "owner",
+        "plan",
+        "is_active",
+        "prefix",
+        "last_used_at",
+        "created_at",
+    )
     list_filter = ("plan", "is_active")
     search_fields = ("name", "owner__username", "prefix")
-    readonly_fields = ("prefix", "key_hash", "created_at")
+    readonly_fields = ("prefix", "key_hash", "last_used_at", "created_at")
