@@ -6,6 +6,8 @@ from django.views.generic import TemplateView
 from rest_framework.permissions import AllowAny
 from rest_framework.schemas import get_schema_view
 
+from projects.health import health
+
 schema_view = get_schema_view(
     title="Project Tracker API",
     description="OpenAPI schema for the project tracker REST API.",
@@ -17,6 +19,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path("health/", health, name="health"),
     path("api/projects/", include("projects.api_urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/schema/", schema_view, name="openapi-schema"),
