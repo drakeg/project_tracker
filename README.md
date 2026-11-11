@@ -135,6 +135,22 @@ Example:
 }
 ```
 
+List endpoints use page-number pagination. The default page size is controlled by
+`API_PAGE_SIZE` (default `50`), clients can request a smaller page with
+`page_size=<n>`, and `API_MAX_PAGE_SIZE` caps client-requested page sizes
+(default `200`).
+
+Paginated responses use DRF's standard envelope:
+
+```json
+{
+  "count": 125,
+  "next": "http://example/api/projects/trackers/?page=2",
+  "previous": null,
+  "results": []
+}
+```
+
 API data endpoints require authentication by default. Django REST Framework
 Basic Authentication and Session Authentication are enabled. The browsable API
 login/logout routes are available under `/api-auth/`.
