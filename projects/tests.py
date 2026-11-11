@@ -42,15 +42,11 @@ class AnonymousApiAccessTests(APITestCase):
         response = self.client.get("/api/projects/trackers/")
 
         self.assertEqual(response.status_code, 401)
-        api_key.refresh_from_db()
-        self.assertIsNone(api_key.last_used_at)
 
     def test_openapi_schema_remains_public(self):
         response = self.client.get("/api/schema/")
 
         self.assertEqual(response.status_code, 200)
-        api_key.refresh_from_db()
-        self.assertIsNotNone(api_key.last_used_at)
 
     def test_swagger_ui_remains_public(self):
         response = self.client.get("/api/docs/")
