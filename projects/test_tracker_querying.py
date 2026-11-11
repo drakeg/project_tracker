@@ -46,7 +46,7 @@ class TrackerQueryTests(APITestCase):
 
     def _titles(self, response):
         self.assertEqual(response.status_code, 200)
-        return [item["title"] for item in response.json()]
+        return [item["title"] for item in response.json()["results"]]
 
     def test_filter_by_relationship_ids(self):
         response = self.client.get(

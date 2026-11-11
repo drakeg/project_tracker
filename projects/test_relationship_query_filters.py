@@ -98,7 +98,7 @@ class RelationshipQueryFilterTests(APITestCase):
 
     def _titles(self, response):
         self.assertEqual(response.status_code, 200)
-        return [item["title"] for item in response.json()]
+        return [item["title"] for item in response.json()["results"]]
 
     def test_tracker_filters_cover_all_relationships(self):
         query_cases = {
@@ -141,13 +141,13 @@ class RelationshipQueryFilterTests(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            [item["comment_text"] for item in response.json()],
+            [item["comment_text"] for item in response.json()["results"]],
             ["Migration started"],
         )
 
         ordered = self.client.get("/api/projects/comments/")
         self.assertEqual(
-            [item["comment_text"] for item in ordered.json()],
+            [item["comment_text"] for item in ordered.json()["results"]],
             ["Cleanup reviewed", "Migration started"],
         )
 
@@ -165,12 +165,12 @@ class RelationshipQueryFilterTests(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            [item["update_text"] for item in response.json()],
+            [item["update_text"] for item in response.json()["results"]],
             ["Migration reached phase two"],
         )
 
         ordered = self.client.get("/api/projects/updates/")
         self.assertEqual(
-            [item["update_text"] for item in ordered.json()],
+            [item["update_text"] for item in ordered.json()["results"]],
             ["Cleanup completed", "Migration reached phase two"],
         )

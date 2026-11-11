@@ -112,6 +112,8 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 API_ALLOW_ANONYMOUS = env_bool("API_ALLOW_ANONYMOUS", False)
+API_PAGE_SIZE = env_int("API_PAGE_SIZE", 50)
+API_MAX_PAGE_SIZE = env_int("API_MAX_PAGE_SIZE", 200)
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "projects.authentication.DeveloperAPIKeyAuthentication",
@@ -125,6 +127,8 @@ REST_FRAMEWORK = {
             else "rest_framework.permissions.IsAuthenticated"
         )
     ],
+    "DEFAULT_PAGINATION_CLASS": "projects.pagination.StandardPageNumberPagination",
+    "PAGE_SIZE": API_PAGE_SIZE,
     "DEFAULT_THROTTLE_CLASSES": [
         "projects.throttling.FreeDeveloperAPIKeyThrottle",
         "projects.throttling.PaidDeveloperAPIKeyThrottle",
