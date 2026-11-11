@@ -204,7 +204,9 @@ class ApiSmokeTests(APITestCase):
         response = self.client.get("/api/projects/status/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [{"status_text": "Open"}])
+        payload = response.json()
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["results"], [{"status_text": "Open"}])
 
     def test_status_create_rejects_case_insensitive_duplicate(self):
         Status.objects.create(status_text="Open")
@@ -259,7 +261,9 @@ class ApiSmokeTests(APITestCase):
         response = self.client.get("/api/projects/keywords/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [{"keyword_text": "security"}])
+        payload = response.json()
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["results"], [{"keyword_text": "security"}])
 
     def test_keyword_create_rejects_case_insensitive_duplicate(self):
         Keyword.objects.create(keyword_text="security")
@@ -312,7 +316,9 @@ class ApiSmokeTests(APITestCase):
         response = self.client.get("/api/projects/trackers/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [])
+        payload = response.json()
+        self.assertEqual(payload["count"], 0)
+        self.assertEqual(payload["results"], [])
 
     def test_openapi_schema_is_available(self):
         response = self.client.get("/api/schema/")
