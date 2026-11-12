@@ -8,26 +8,6 @@ P3 polish/future work. Size: S, M, L.
 
 ## Ready
 
-### PT-101 — Validate tracker relationship filter IDs
-- Priority: P1
-- Size: S
-- Story: As an API client, I want malformed relationship filters to return a
-  controlled validation error so that bad input never becomes a server error.
-- Acceptance criteria:
-  - non-integer relationship IDs return HTTP 400;
-  - valid numeric IDs preserve existing filtering behavior;
-  - tests cover status/task/contact and newer relationship filters.
-
-### PT-102 — Validate tracker date filter formats
-- Priority: P1
-- Size: S
-- Story: As an API client, I want malformed date filters rejected explicitly so
-  that date-query behavior is predictable.
-- Acceptance criteria:
-  - invalid dates return HTTP 400;
-  - documented YYYY-MM-DD values continue to work;
-  - tests cover both date boundaries.
-
 ### PT-103 — Add production deployment check to CI
 - Priority: P1
 - Size: M
@@ -121,6 +101,20 @@ P3 polish/future work. Size: S, M, L.
 - Blocked by:
   - verified third-party schema package compatibility with the current
     Django/DRF stack.
+
+## Completed
+
+### PT-101 — Validate tracker relationship filter IDs
+- Priority: P1
+- Size: S
+- Result: non-integer tracker relationship filter values return HTTP 400 while
+  valid integer filters preserve existing behavior.
+
+### PT-102 — Validate tracker date filter formats
+- Priority: P1
+- Size: S
+- Result: malformed tracker date filters return HTTP 400 and documented
+  YYYY-MM-DD values preserve existing behavior.
 
 ## Recently completed foundation
 
