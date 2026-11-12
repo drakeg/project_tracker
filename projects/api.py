@@ -36,7 +36,7 @@ def _integer_query_parameter(query_params, name):
     try:
         return int(value)
     except (TypeError, ValueError) as exc:
-        raise serializers.ValidationError({name: "Must be an integer."}) from exc
+        raise serializers.ValidationError({name: ["Must be an integer."]}) from exc
 
 
 def _date_query_parameter(query_params, name):
@@ -49,7 +49,7 @@ def _date_query_parameter(query_params, name):
         return field.run_validation(value)
     except serializers.ValidationError as exc:
         raise serializers.ValidationError(
-            {name: "Enter a valid date in YYYY-MM-DD format."}
+            {name: ["Enter a valid date in YYYY-MM-DD format."]}
         ) from exc
 
 
