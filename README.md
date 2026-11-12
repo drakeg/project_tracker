@@ -84,6 +84,9 @@ Current resources include:
 - `/api/projects/keywords/`
 - `/api/projects/status/`
 
+Lookup-value endpoints for status, keyword, task, alignment, and maturity model
+reject case-insensitive duplicates on both create and update.
+
 Tracker list queries support:
 
 - `status=<id>`
