@@ -90,7 +90,6 @@ class TrackerQueryTests(APITestCase):
             ["Beta Review", "Alpha Migration"],
         )
 
-
     def test_invalid_relationship_filter_ids_return_400(self):
         parameters = [
             "status",
