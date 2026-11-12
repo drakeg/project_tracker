@@ -19,6 +19,14 @@ from .models import (
 class TaskSerializer(serializers.ModelSerializer):
     """Serializer for task values."""
 
+    def validate_task_text(self, value):
+        query = Task.objects.filter(task_text__iexact=value)
+        if self.instance is not None:
+            query = query.exclude(pk=self.instance.pk)
+        if query.exists():
+            raise serializers.ValidationError("Task already exists.")
+        return value
+
     class Meta:
         model = Task
         fields = "__all__"
@@ -35,6 +43,14 @@ class DTContactSerializer(serializers.ModelSerializer):
 class AlignmentSerializer(serializers.ModelSerializer):
     """Serializer for alignment values."""
 
+    def validate_alignment_text(self, value):
+        query = Alignment.objects.filter(alignment_text__iexact=value)
+        if self.instance is not None:
+            query = query.exclude(pk=self.instance.pk)
+        if query.exists():
+            raise serializers.ValidationError("Alignment already exists.")
+        return value
+
     class Meta:
         model = Alignment
         fields = "__all__"
@@ -42,6 +58,14 @@ class AlignmentSerializer(serializers.ModelSerializer):
 
 class MaturityModelSerializer(serializers.ModelSerializer):
     """Serializer for maturity-model values."""
+
+    def validate_maturitymodel_text(self, value):
+        query = MaturityModel.objects.filter(maturitymodel_text__iexact=value)
+        if self.instance is not None:
+            query = query.exclude(pk=self.instance.pk)
+        if query.exists():
+            raise serializers.ValidationError("Maturity model already exists.")
+        return value
 
     class Meta:
         model = MaturityModel
