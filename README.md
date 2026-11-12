@@ -218,6 +218,8 @@ See:
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [Coding standards](docs/CODING_STANDARDS.md)
 - [Sprint process](docs/SPRINTS.md)
+- [Product roadmap](docs/ROADMAP.md)
+- [Prioritized backlog](docs/BACKLOG.md)
 - [Production deployment](docs/DEPLOYMENT.md)
 - [Developer API access](docs/DEVELOPER_API_ACCESS.md)
 
