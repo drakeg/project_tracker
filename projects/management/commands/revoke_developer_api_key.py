@@ -15,9 +15,7 @@ class Command(BaseCommand):
         prefix = options["prefix"]
 
         try:
-            api_key = DeveloperAPIKey.objects.select_related("owner").get(
-                prefix=prefix
-            )
+            api_key = DeveloperAPIKey.objects.select_related("owner").get(prefix=prefix)
         except DeveloperAPIKey.DoesNotExist as exc:
             raise CommandError("API key does not exist.") from exc
 
