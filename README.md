@@ -107,6 +107,10 @@ Example:
 /api/projects/trackers/?status=2&keyword=4&search=migration&ordering=-start_date
 ```
 
+Relationship filter values must be integers, and date filters must use
+`YYYY-MM-DD`. Malformed values return HTTP `400` with the offending query
+parameter as the error key instead of reaching the database layer.
+
 Comment and update list queries support:
 
 - `tracker=<id>`
