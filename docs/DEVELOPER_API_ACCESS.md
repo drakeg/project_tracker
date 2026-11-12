@@ -63,10 +63,21 @@ changing how clients authenticate.
 ## Revocation and expiration
 
 Keys can be disabled from Django admin by clearing `is_active`. They can also
-be assigned an `expires_at` value. Django admin shows both `created_at` and
-`last_used_at` so unused or stale credentials are easier to identify. Disabled,
-expired, malformed, and invalid keys all fail authentication without revealing
-which part of the credential was incorrect.
+be revoked from the command line using the non-secret prefix shown in admin and
+stored alongside the key metadata:
+
+```bash
+python manage.py revoke_developer_api_key --prefix <prefix>
+```
+
+Revocation is idempotent: running the command again for an already-revoked key
+reports its current state without reactivating or changing it. Unknown prefixes
+return an error.
+
+Keys can also be assigned an `expires_at` value. Django admin shows both
+`created_at` and `last_used_at` so unused or stale credentials are easier to
+identify. Disabled, expired, malformed, and invalid keys all fail authentication
+without revealing which part of the credential was incorrect.
 
 ## Security properties
 
