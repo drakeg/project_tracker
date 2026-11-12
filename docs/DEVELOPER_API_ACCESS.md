@@ -17,7 +17,8 @@ python manage.py create_developer_api_key \
 
 The plaintext key is printed once. Store it in a secrets manager or other secure
 credential store. The database stores only a password-style hash plus a short,
-non-secret prefix used to locate the credential.
+non-secret prefix used to locate the credential. Successful authentication also
+records the key's `last_used_at` timestamp for operational auditing.
 
 ## Using a key
 
@@ -62,9 +63,10 @@ changing how clients authenticate.
 ## Revocation and expiration
 
 Keys can be disabled from Django admin by clearing `is_active`. They can also
-be assigned an `expires_at` value. Disabled, expired, malformed, and invalid
-keys all fail authentication without revealing which part of the credential was
-incorrect.
+be assigned an `expires_at` value. Django admin shows both `created_at` and
+`last_used_at` so unused or stale credentials are easier to identify. Disabled,
+expired, malformed, and invalid keys all fail authentication without revealing
+which part of the credential was incorrect.
 
 ## Security properties
 

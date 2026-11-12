@@ -142,6 +142,7 @@ class DeveloperAPIKey(models.Model):
     plan = models.CharField(max_length=20, choices=Plan.choices, default=Plan.FREE)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
     expires_at = models.DateTimeField(null=True, blank=True)
 
     @classmethod

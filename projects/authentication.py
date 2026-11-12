@@ -41,6 +41,9 @@ class DeveloperAPIKeyAuthentication(authentication.BaseAuthentication):
         if not api_key.owner.is_active:
             raise exceptions.AuthenticationFailed("Invalid API key.")
 
+        api_key.last_used_at = timezone.now()
+        api_key.save(update_fields=["last_used_at"])
+
         return api_key.owner, api_key
 
     def authenticate_header(self, request):

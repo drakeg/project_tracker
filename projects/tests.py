@@ -98,14 +98,23 @@ class DeveloperAPIKeyTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+        api_key.refresh_from_db()
+        self.assertIsNotNone(api_key.last_used_at)
 
     def test_invalid_api_key_is_rejected(self):
+        api_key, _raw_key = DeveloperAPIKey.issue(
+            owner=self.user,
+            name="Unused key",
+        )
+
         response = self.client.get(
             "/api/projects/trackers/",
             HTTP_X_API_KEY="ptk_invalid_invalid",
         )
 
         self.assertEqual(response.status_code, 401)
+        api_key.refresh_from_db()
+        self.assertIsNone(api_key.last_used_at)
 
     def test_inactive_api_key_is_rejected(self):
         api_key, raw_key = DeveloperAPIKey.issue(
@@ -121,6 +130,8 @@ class DeveloperAPIKeyTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, 401)
+        api_key.refresh_from_db()
+        self.assertIsNone(api_key.last_used_at)
 
     @override_settings(REST_FRAMEWORK=THROTTLED_REST_FRAMEWORK)
     def test_free_plan_uses_lower_request_limit(self):
