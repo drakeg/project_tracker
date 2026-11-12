@@ -221,6 +221,13 @@ See:
 - [Production deployment](docs/DEPLOYMENT.md)
 - [Developer API access](docs/DEVELOPER_API_ACCESS.md)
 
+## Django admin
+
+The Django admin at `/admin/` provides searchable and filterable management
+screens for trackers, contacts, delivery-team contacts, comments, and updates.
+Tracker administration includes relationship filters, keyword selection, and
+date navigation. Maturity models are also registered in admin.
+
 ## Health monitoring
 
 A public operational health check is available at:
