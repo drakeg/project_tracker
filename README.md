@@ -154,6 +154,10 @@ Paginated responses use DRF's standard envelope:
 }
 ```
 
+Tracker list queries eagerly load their single-value relationships and prefetch
+keywords so nested tracker responses do not introduce per-row relationship
+queries as page sizes grow.
+
 API data endpoints require authentication by default. Django REST Framework
 Basic Authentication and Session Authentication are enabled. The browsable API
 login/logout routes are available under `/api-auth/`.

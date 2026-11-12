@@ -32,7 +32,14 @@ class TrackerViewSet(viewsets.ModelViewSet):
     """CRUD API for project trackers."""
 
     serializer_class = FullTrackerSerializer
-    queryset = Tracker.objects.all()
+    queryset = Tracker.objects.select_related(
+        "task",
+        "contact",
+        "dtcontact",
+        "status",
+        "alignment",
+        "maturitymodel",
+    ).prefetch_related("keywords")
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["title"]
     ordering_fields = ["title", "start_date", "end_date", "create_date"]
