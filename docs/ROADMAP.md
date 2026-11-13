@@ -122,12 +122,14 @@ Stretch:
 
 Goal: make query/filter failures predictable for API clients.
 
-Planned:
+Status: completed.
 
-- validate relationship filter IDs;
-- validate date filter formats;
-- return DRF `400` errors for malformed query parameters;
-- document error examples.
+Delivered:
+
+- relationship filter ID validation;
+- strict date filter validation;
+- DRF `400` responses for malformed tracker query parameters;
+- documented error behavior.
 
 ### Sprint C — Production-readiness checks
 

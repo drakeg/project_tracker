@@ -1,6 +1,6 @@
 """API viewsets for project tracker resources."""
 
-from rest_framework import filters, viewsets
+from rest_framework import filters, serializers, viewsets
 
 from .models import (
     Alignment,
@@ -26,6 +26,31 @@ from .serializers import (
     TaskSerializer,
     UpdateSerializer,
 )
+
+
+def _integer_query_parameter(query_params, name):
+    value = query_params.get(name)
+    if not value:
+        return None
+
+    try:
+        return int(value)
+    except (TypeError, ValueError) as exc:
+        raise serializers.ValidationError({name: ["Must be an integer."]}) from exc
+
+
+def _date_query_parameter(query_params, name):
+    value = query_params.get(name)
+    if not value:
+        return None
+
+    field = serializers.DateField()
+    try:
+        return field.run_validation(value)
+    except serializers.ValidationError as exc:
+        raise serializers.ValidationError(
+            {name: ["Enter a valid date in YYYY-MM-DD format."]}
+        ) from exc
 
 
 class TrackerViewSet(viewsets.ModelViewSet):
@@ -59,16 +84,16 @@ class TrackerViewSet(viewsets.ModelViewSet):
             "keyword": "keywords__id",
         }
         for parameter, field in relationship_filters.items():
-            value = query_params.get(parameter)
-            if value:
+            value = _integer_query_parameter(query_params, parameter)
+            if value is not None:
                 queryset = queryset.filter(**{field: value})
 
-        start_date_gte = query_params.get("start_date_gte")
-        if start_date_gte:
+        start_date_gte = _date_query_parameter(query_params, "start_date_gte")
+        if start_date_gte is not None:
             queryset = queryset.filter(start_date__gte=start_date_gte)
 
-        end_date_lte = query_params.get("end_date_lte")
-        if end_date_lte:
+        end_date_lte = _date_query_parameter(query_params, "end_date_lte")
+        if end_date_lte is not None:
             queryset = queryset.filter(end_date__lte=end_date_lte)
 
         return queryset.distinct()

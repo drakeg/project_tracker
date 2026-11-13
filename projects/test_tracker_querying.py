@@ -89,3 +89,51 @@ class TrackerQueryTests(APITestCase):
             self._titles(response),
             ["Beta Review", "Alpha Migration"],
         )
+
+    def test_invalid_relationship_filter_ids_return_400(self):
+        parameters = [
+            "status",
+            "task",
+            "contact",
+            "dtcontact",
+            "alignment",
+            "maturitymodel",
+            "keyword",
+        ]
+
+        for parameter in parameters:
+            with self.subTest(parameter=parameter):
+                response = self.client.get(
+                    "/api/projects/trackers/",
+                    {parameter: "not-an-integer"},
+                )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(
+                    response.json()[parameter],
+                    ["Must be an integer."],
+                )
+
+    def test_invalid_start_date_filter_returns_400(self):
+        response = self.client.get(
+            "/api/projects/trackers/",
+            {"start_date_gte": "not-a-date"},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["start_date_gte"],
+            ["Enter a valid date in YYYY-MM-DD format."],
+        )
+
+    def test_invalid_end_date_filter_returns_400(self):
+        response = self.client.get(
+            "/api/projects/trackers/",
+            {"end_date_lte": "2026-99-99"},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["end_date_lte"],
+            ["Enter a valid date in YYYY-MM-DD format."],
+        )
