@@ -1,5 +1,8 @@
 # project_tracker
 
+[![License](https://img.shields.io/github/license/drakeg/project_tracker)](https://github.com/drakeg/project_tracker/blob/master/LICENSE)
+
+
 A Django and Django REST Framework project tracker.
 
 ## Docker Compose
